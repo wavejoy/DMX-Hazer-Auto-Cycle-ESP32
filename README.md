@@ -4,8 +4,7 @@ A standalone ESP32-based DMX controller that automatically cycles a hazer on and
 
 ## Why I Built This
 
-I originally developed this controller for a **haunted house installation** that needed a hazer to run automatically for long periods of time.
-
+I originally developed this controller for a haunted house installation that needed a hazer to run automatically for long periods of time.
 The hazer supported DMX control, but did not have a useful standalone auto-cycle mode. Leaving a lighting console or computer running just to control a single DMX channel was unnecessary.
 
 This project solves that problem with an ESP32 and a MAX485 module.
