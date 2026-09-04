@@ -1,100 +1,116 @@
-# ESP32 Hazer DMX Auto-Cycle Controller
+# DMX Hazer Auto-Cycle — ESP32
 
-Standalone ESP32 + MAX485 controller for an Antari ICE-101 or compatible 1-channel hazer.
+A standalone ESP32-based DMX controller that automatically cycles a hazer on and off without requiring a lighting console, computer, or operator.
 
-## Default behavior
+## Why I Built This
 
-- DMX address: **1**
-- Haze level: **240**
-- ON: **15 seconds**
-- OFF: **30 seconds**
-- Starts in the OFF phase
+I originally developed this controller for a **haunted house installation** that needed a hazer to run automatically for long periods of time.
 
-## Verified working toolchain
+The hazer supported DMX control, but did not have a useful standalone auto-cycle mode. Leaving a lighting console or computer running just to control a single DMX channel was unnecessary.
 
-- Arduino IDE **2.3.6**
-- `esp32 by Espressif Systems` **2.0.17**
-- `esp_dmx` by Mitch Weisbrod **3.1.0**
-- Board: **ESP32 Dev Module**
+This project solves that problem with an ESP32 and a MAX485 module.
 
-Newer ESP32 cores / newer major `esp_dmx` versions may require code changes.
+Once programmed and connected, operation is completely standalone:
+
+**Power on the hazer → power on the controller → it automatically begins cycling.**
+
+No lighting console, computer, network connection, Wi-Fi, buttons, or additional setup is required during normal operation.
+
+Although originally designed for a haunted house, the same approach could be useful for:
+
+- Haunted attractions
+- Theatre installations
+- Art installations
+- Museum exhibits
+- Escape rooms
+- Permanent atmospheric effects
+- Small events
+- Any installation where a DMX device needs to repeatedly cycle without a lighting console
+
+The firmware can easily be modified for different ON/OFF intervals and DMX output levels.
+
+## Tested Hardware
+
+This project was developed and tested using:
+
+| Component | Part |
+|---|---|
+| Microcontroller | [ESP32 Development Board](https://a.co/d/06P1BBSm) |
+| DMX / RS-485 Interface | [MAX485 Module](https://a.co/d/05upeWoA) |
+| Hazer | Antari ICE-101 / compatible clone |
+| DMX Connector | 3-pin XLR |
+
+Similar hardware may work, but this is the exact ESP32 and MAX485 hardware used during development and testing.
+
+## Default Behavior
+
+The included firmware is configured for:
+
+- **DMX address:** 1
+- **Haze level:** 240
+- **ON time:** 15 seconds
+- **OFF time:** 30 seconds
+- **Startup state:** OFF
+
+After power-up, the controller waits through the initial OFF period before triggering the first haze cycle. This also gives the hazer additional warm-up time.
+
+The cycle then repeats indefinitely:
+
+**30 sec OFF → 15 sec ON → 30 sec OFF → 15 sec ON → ...**
+
+## Verified Working Toolchain
+
+The following versions were used for the tested build:
+
+- **Arduino IDE:** 2.3.6
+- **ESP32 Core:** 2.0.17 (`esp32 by Espressif Systems`)
+- **esp_dmx:** 3.1.0 by Mitch Weisbrod
+- **Board:** ESP32 Dev Module
+
+> **Important:** Newer ESP32 cores and newer major versions of `esp_dmx` use different APIs and may not compile with this sketch without modification. If you simply want to reproduce the working build, use the versions listed above.
 
 ## Wiring
 
 | Connection | To |
 |---|---|
 | ESP32 GPIO17 / TX2 | MAX485 DI |
-| ESP32 GPIO21 | MAX485 DE + RE bridged |
+| ESP32 GPIO21 | MAX485 DE + RE bridged together |
 | ESP32 VIN / 5V | MAX485 VCC |
 | ESP32 GND | MAX485 GND |
 | MAX485 RO | Leave disconnected |
 | MAX485 A | DMX XLR pin 3 / Data+ |
 | MAX485 B | DMX XLR pin 2 / Data- |
-| MAX485 GND | DMX XLR pin 1 |
+| MAX485 GND | DMX XLR pin 1 / Ground |
 
-## Hazer setup
+### DMX Connector
 
-Set the hazer to **DMX address 1**. On the tested unit, all DIP switches OFF = address 1.
+For the tested 3-pin DMX connection:
 
-Channel map:
+| XLR Pin | Signal |
+|---|---|
+| Pin 1 | Ground / Shield |
+| Pin 2 | Data- |
+| Pin 3 | Data+ |
 
-- `0–5`: OFF
-- `6–249`: approximately 5–95% output
-- `250–255`: 100%
+## Hazer Setup
 
-## Install and flash
+The included firmware transmits on **DMX channel 1**.
 
-1. Install Arduino IDE 2.3.6.
-2. In Boards Manager, install `esp32 by Espressif Systems` version 2.0.17.
-3. In Library Manager, install `esp_dmx` by Mitch Weisbrod version 3.1.0.
-4. Select **ESP32 Dev Module**.
-5. Connect the ESP32 over USB and select its `/dev/cu.usbserial...` port.
-6. Open `hazer_dmx_cycle.ino`.
-7. Click **Verify**.
-8. Click **Upload**.
+Set the hazer to **DMX address 1**.
 
-Successful upload should end with:
+On the tested Antari ICE-101-compatible unit, all address DIP switches OFF corresponds to DMX address 1.
 
-```text
-Hash of data verified.
-Leaving...
-Hard resetting via RTS pin...
-```
+### Tested DMX Value Map
 
-## Change timing/output
+The tested hazer's Channel A responds as follows:
 
-Edit:
+- `0–5` = OFF
+- `6–249` = approximately 5–95% output
+- `250–255` = 100% output
+
+The included firmware uses:
 
 ```cpp
-const uint8_t FOG_LEVEL     = 240;
-const unsigned long ON_MS   = 15000;
-const unsigned long OFF_MS  = 30000;
-```
-
-Times are milliseconds: `1000 = 1 second`.
-
-## Diagnostics
-
-Open Serial Monitor at **115200 baud**.
-
-Healthy output looks like:
-
-```text
-=== hazer DMX starting ===
-install -> 0
-PACKET_SIZE = 513
-fps=38 slot1=0
-fps=39 slot1=240
-```
-
-`slot1=0` = OFF. `slot1=240` = ON.
-
-## Files
-
-```text
-hazer-dmx-cycle/
-├── hazer_dmx_cycle.ino
-└── README.md
-```
+const uint8_t FOG_LEVEL = 240;
 
 Designed by Jesse @ freejoy.club.
