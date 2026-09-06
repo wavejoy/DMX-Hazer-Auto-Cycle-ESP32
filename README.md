@@ -1,4 +1,4 @@
-# DMX Hazer Auto-Cycle — ESP32
+# DMX Hazer Auto-Cycle - ESP32
 
 A standalone ESP32-based DMX controller that automatically cycles a hazer on and off without requiring a lighting console, computer, or operator.
 
