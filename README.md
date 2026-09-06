@@ -118,9 +118,11 @@ const uint8_t FOG_LEVEL = 240;
 
 Once the controller is assembled and programmed, installation is simple. The controller can remain mounted to the hazer between uses.
 
+![Hazer DMX Auto-Cycle Controller Installation Guide - Page 2](install-guide-page-2.PNG)
+
 ![Hazer DMX Auto-Cycle Controller Installation Guide - Page 1](install-guide-page-1.PNG)
 
-![Hazer DMX Auto-Cycle Controller Installation Guide - Page 2](install-guide-page-2.PNG)
+
 
 ---
 
